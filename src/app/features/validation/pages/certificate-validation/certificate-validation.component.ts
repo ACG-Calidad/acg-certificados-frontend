@@ -25,7 +25,7 @@ import { Certificate } from '@core/models/certificate.model';
     MatProgressSpinnerModule
   ],
   templateUrl: './certificate-validation.component.html',
-  styleUrl: './certificate-validation.component.scss'
+  styleUrls: ['./certificate-validation.component.scss']
 })
 export class CertificateValidationComponent {
   verificationCode = '';

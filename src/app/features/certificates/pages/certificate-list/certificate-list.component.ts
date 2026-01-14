@@ -27,7 +27,7 @@ import { User } from '@core/models/user.model';
     MatInputModule
   ],
   templateUrl: './certificate-list.component.html',
-  styleUrl: './certificate-list.component.scss'
+  styleUrls: ['./certificate-list.component.scss']
 })
 export class CertificateListComponent implements OnInit {
   user: User | null = null;
@@ -43,9 +43,14 @@ export class CertificateListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    console.log('📋 [CertificateList] Componente inicializado');
     this.user = this.authService.getUserData();
+    console.log('👤 [CertificateList] Usuario:', this.user);
+
     if (this.user) {
       this.loadCertificates();
+    } else {
+      console.error('❌ [CertificateList] No hay usuario autenticado');
     }
   }
 
@@ -55,17 +60,23 @@ export class CertificateListComponent implements OnInit {
     this.loading = true;
     this.error = null;
 
+    console.log('🔄 [CertificateList] Cargando certificados para usuario:', this.user.userid);
+
     this.certificateService.getUserCertificates(this.user.userid).subscribe({
       next: (response) => {
+        console.log('📥 [CertificateList] Respuesta del backend:', response);
         if (response.success) {
           this.certificates = response.data;
           this.filteredCertificates = response.data;
+          console.log('✅ [CertificateList] Certificados cargados:', this.certificates.length);
         } else {
           this.error = response.error || 'Error al cargar certificados';
+          console.error('❌ [CertificateList] Error:', this.error);
         }
         this.loading = false;
       },
       error: (error) => {
+        console.error('❌ [CertificateList] Error HTTP:', error);
         this.error = error.message || 'Error al cargar certificados';
         this.loading = false;
       }
