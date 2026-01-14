@@ -1,70 +1,28 @@
 // ACG Certificados - Global Styles
 
-// Material Theme
+// Material Theme - Angular Material 21
 @use '@angular/material' as mat;
 
+// Include core styles
 @include mat.core();
 
-// ACG Color Palette
-$acg-primary: mat.define-palette((
-  50: #e6f0ff,
-  100: #b3d1ff,
-  200: #80b3ff,
-  300: #4d94ff,
-  400: #267dff,
-  500: #0066CC,
-  600: #0052a3,
-  700: #004080,
-  800: #002e5c,
-  900: #001d3d,
-  contrast: (
-    50: rgba(black, 0.87),
-    100: rgba(black, 0.87),
-    200: rgba(black, 0.87),
-    300: white,
-    400: white,
-    500: white,
-    600: white,
-    700: white,
-    800: white,
-    900: white,
-  )
-));
-
-$acg-accent: mat.define-palette((
-  50: #fef5f0,
-  100: #fce4d6,
-  200: #f9d2ba,
-  300: #f6bf9e,
-  400: #f4b188,
-  500: #CD5C2D,
-  600: #b84f21,
-  700: #a04318,
-  800: #883811,
-  900: #5e2608,
-  contrast: (
-    50: rgba(black, 0.87),
-    100: rgba(black, 0.87),
-    200: rgba(black, 0.87),
-    300: rgba(black, 0.87),
-    400: rgba(black, 0.87),
-    500: white,
-    600: white,
-    700: white,
-    800: white,
-    900: white,
-  )
-));
-
-$acg-theme: mat.define-light-theme((
+// Define the theme using the new Material 3 API
+$acg-theme: mat.define-theme((
   color: (
-    primary: $acg-primary,
-    accent: $acg-accent,
+    theme-type: light,
+    primary: mat.$azure-palette,
+    tertiary: mat.$orange-palette,
   ),
-  typography: mat.define-typography-config(),
-  density: 0,
+  typography: (
+    brand-family: 'Roboto, "Helvetica Neue", sans-serif',
+    plain-family: 'Roboto, "Helvetica Neue", sans-serif',
+  ),
+  density: (
+    scale: 0,
+  )
 ));
 
+// Apply the theme to all components
 @include mat.all-component-themes($acg-theme);
 
 // Global Styles

@@ -43,16 +43,18 @@ export class AppComponent implements OnInit {
       next: (response) => {
         if (response.valid) {
           console.log('Token validado correctamente:', response);
-          // Limpiar el token de la URL
+          // Redirigir a la lista de certificados
           this.router.navigate(['/'], { replaceUrl: true });
         } else {
           console.error('Token inválido:', response.error);
-          // TODO: Mostrar mensaje de error al usuario
+          // Redirigir a validación de certificados si el token es inválido
+          this.router.navigate(['/validar'], { replaceUrl: true });
         }
       },
       error: (error) => {
         console.error('Error validando token:', error);
-        // TODO: Mostrar mensaje de error al usuario
+        // Redirigir a validación de certificados en caso de error
+        this.router.navigate(['/validar'], { replaceUrl: true });
       }
     });
   }

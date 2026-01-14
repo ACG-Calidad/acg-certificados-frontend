@@ -13,9 +13,9 @@ export const authGuard: CanActivateFn = (route, state) => {
     return true;
   }
 
-  // Redirigir a página de error o login si no está autenticado
-  console.warn('Usuario no autenticado, redirigiendo...');
-  router.navigate(['/']);
+  // Redirigir a validación de certificados si no está autenticado
+  console.warn('Usuario no autenticado, redirigiendo a validación...');
+  router.navigate(['/validar']);
   return false;
 };
 
@@ -31,7 +31,7 @@ export const gestorGuard: CanActivateFn = (route, state) => {
   }
 
   console.warn('Acceso denegado: se requiere rol de gestor o admin');
-  router.navigate(['/']);
+  router.navigate(['/validar']);
   return false;
 };
 
@@ -47,6 +47,6 @@ export const adminGuard: CanActivateFn = (route, state) => {
   }
 
   console.warn('Acceso denegado: se requiere rol de admin');
-  router.navigate(['/']);
+  router.navigate(['/validar']);
   return false;
 };
