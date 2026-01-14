@@ -1,0 +1,108 @@
+<div class="validation-container">
+  <div class="validation-card-wrapper">
+    <mat-card class="validation-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>verified_user</mat-icon>
+          Validar Certificado
+        </mat-card-title>
+        <mat-card-subtitle>
+          Ingrese el código de verificación para validar la autenticidad del certificado
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Form -->
+        <div class="validation-form" *ngIf="!validated">
+          <mat-form-field appearance="outline" class="code-field">
+            <mat-label>Código de Verificación</mat-label>
+            <input matInput
+                   [(ngModel)]="verificationCode"
+                   placeholder="Ej: ABC123XYZ789"
+                   (keyup.enter)="validateCertificate()">
+            <mat-icon matPrefix>key</mat-icon>
+          </mat-form-field>
+
+          <button mat-raised-button
+                  color="primary"
+                  (click)="validateCertificate()"
+                  [disabled]="!verificationCode.trim() || loading"
+                  class="validate-button">
+            <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+            <mat-icon *ngIf="!loading">search</mat-icon>
+            {{ loading ? 'Validando...' : 'Validar Certificado' }}
+          </button>
+        </div>
+
+        <!-- Valid Certificate -->
+        <div class="validation-result success" *ngIf="validated && isValid && certificate">
+          <div class="result-icon">
+            <mat-icon>check_circle</mat-icon>
+          </div>
+          <h2>Certificado Válido</h2>
+          <p class="result-message">Este certificado es auténtico y fue emitido por ACG Calidad.</p>
+
+          <div class="certificate-details">
+            <div class="detail-row">
+              <span class="label">Nombre:</span>
+              <span class="value">{{ certificate.nombre }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Curso:</span>
+              <span class="value">{{ certificate.curso }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Fecha de emisión:</span>
+              <span class="value">{{ certificate.fecha_emision | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Código:</span>
+              <span class="value verification-code">{{ certificate.codigo_verificacion }}</span>
+            </div>
+          </div>
+
+          <button mat-raised-button color="primary" (click)="reset()">
+            Validar Otro Certificado
+          </button>
+        </div>
+
+        <!-- Invalid Certificate -->
+        <div class="validation-result error" *ngIf="validated && !isValid">
+          <div class="result-icon">
+            <mat-icon>cancel</mat-icon>
+          </div>
+          <h2>Certificado No Válido</h2>
+          <p class="result-message">
+            {{ errorMessage || 'El código ingresado no corresponde a ningún certificado válido.' }}
+          </p>
+          <p class="help-text">
+            Por favor, verifique que el código sea correcto o contacte con ACG Calidad para más información.
+          </p>
+
+          <button mat-raised-button color="primary" (click)="reset()">
+            Intentar Nuevamente
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Info Card -->
+    <mat-card class="info-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>info</mat-icon>
+          Información
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>El código de verificación es un identificador único que aparece en cada certificado emitido por ACG Calidad.</p>
+        <p><strong>¿Dónde encontrarlo?</strong></p>
+        <ul>
+          <li>En la parte inferior del certificado PDF</li>
+          <li>Formato: letras y números (Ej: ABC123XYZ789)</li>
+          <li>Es sensible a mayúsculas y minúsculas</li>
+        </ul>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

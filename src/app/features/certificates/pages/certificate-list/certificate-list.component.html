@@ -1,0 +1,97 @@
+<div class="certificate-list-container">
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="user-info">
+        <h1>Mis Certificados</h1>
+        <p class="welcome-text">Bienvenido, {{ user?.firstname }} {{ user?.lastname }}</p>
+      </div>
+      <button mat-raised-button color="warn" (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        Salir
+      </button>
+    </div>
+  </header>
+
+  <!-- Search Bar -->
+  <div class="search-container">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Buscar certificado</mat-label>
+      <input matInput
+             [(ngModel)]="searchTerm"
+             (ngModelChange)="filterCertificates()"
+             placeholder="Nombre del curso, código de verificación...">
+      <mat-icon matPrefix>search</mat-icon>
+    </mat-form-field>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Cargando certificados...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <mat-icon color="warn">error</mat-icon>
+    <p>{{ error }}</p>
+    <button mat-raised-button color="primary" (click)="loadCertificates()">
+      Reintentar
+    </button>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && !error && filteredCertificates.length === 0" class="empty-container">
+    <mat-icon>description</mat-icon>
+    <p>No se encontraron certificados</p>
+    <p class="empty-subtitle">
+      {{ searchTerm ? 'Intenta con otro término de búsqueda' : 'Aún no tienes certificados generados' }}
+    </p>
+  </div>
+
+  <!-- Certificate Grid -->
+  <div *ngIf="!loading && !error && filteredCertificates.length > 0" class="certificates-grid">
+    <mat-card *ngFor="let certificate of filteredCertificates" class="certificate-card">
+      <mat-card-header>
+        <mat-card-title>{{ certificate.nombre }}</mat-card-title>
+        <mat-card-subtitle>{{ certificate.curso }}</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="certificate-info">
+          <div class="info-row">
+            <mat-icon>event</mat-icon>
+            <span>{{ certificate.fecha_emision | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="info-row">
+            <mat-icon>verified</mat-icon>
+            <span class="verification-code">{{ certificate.codigo_verificacion }}</span>
+          </div>
+          <div class="info-row">
+            <span class="status-badge" [ngClass]="getStatusClass(certificate.estado)">
+              {{ getStatusLabel(certificate.estado) }}
+            </span>
+          </div>
+        </div>
+
+        <div *ngIf="certificate.comentarios" class="comments">
+          <p><strong>Comentarios:</strong> {{ certificate.comentarios }}</p>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-raised-button
+                color="primary"
+                (click)="downloadCertificate(certificate)"
+                [disabled]="certificate.estado !== 'approved'">
+          <mat-icon>download</mat-icon>
+          Descargar PDF
+        </button>
+        <button mat-button color="accent">
+          <mat-icon>share</mat-icon>
+          Compartir
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

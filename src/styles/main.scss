@@ -1,0 +1,124 @@
+// ACG Certificados - Global Styles
+
+// Material Theme
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+// ACG Color Palette
+$acg-primary: mat.define-palette((
+  50: #e6f0ff,
+  100: #b3d1ff,
+  200: #80b3ff,
+  300: #4d94ff,
+  400: #267dff,
+  500: #0066CC,
+  600: #0052a3,
+  700: #004080,
+  800: #002e5c,
+  900: #001d3d,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: white,
+    400: white,
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+  )
+));
+
+$acg-accent: mat.define-palette((
+  50: #fef5f0,
+  100: #fce4d6,
+  200: #f9d2ba,
+  300: #f6bf9e,
+  400: #f4b188,
+  500: #CD5C2D,
+  600: #b84f21,
+  700: #a04318,
+  800: #883811,
+  900: #5e2608,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: rgba(black, 0.87),
+    400: rgba(black, 0.87),
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+  )
+));
+
+$acg-theme: mat.define-light-theme((
+  color: (
+    primary: $acg-primary,
+    accent: $acg-accent,
+  ),
+  typography: mat.define-typography-config(),
+  density: 0,
+));
+
+@include mat.all-component-themes($acg-theme);
+
+// Global Styles
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: #f5f5f5;
+}
+
+// Utility Classes
+.text-center {
+  text-align: center;
+}
+
+.mt-1 { margin-top: 8px; }
+.mt-2 { margin-top: 16px; }
+.mt-3 { margin-top: 24px; }
+.mt-4 { margin-top: 32px; }
+
+.mb-1 { margin-bottom: 8px; }
+.mb-2 { margin-bottom: 16px; }
+.mb-3 { margin-bottom: 24px; }
+.mb-4 { margin-bottom: 32px; }
+
+.p-1 { padding: 8px; }
+.p-2 { padding: 16px; }
+.p-3 { padding: 24px; }
+.p-4 { padding: 32px; }
+
+// Custom Scrollbar
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
