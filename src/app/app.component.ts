@@ -43,11 +43,13 @@ export class AppComponent implements OnInit {
   private checkForTokenInUrl(): void {
     // Obtener el token de la URL actual
     const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
+    const token = urlParams.get('moodle_token'); // El plugin envía 'moodle_token'
 
     if (token) {
-      console.log('Token detectado en URL:', token);
+      console.log('🎫 Token detectado en URL:', token);
       this.validateToken(token);
+    } else {
+      console.log('⚠️ No se detectó token en la URL');
     }
   }
 
