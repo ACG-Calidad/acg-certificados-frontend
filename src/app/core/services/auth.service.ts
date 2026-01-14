@@ -32,8 +32,13 @@ export class AuthService {
 
     const url = `${environment.moodleUrl}/webservice/rest/server.php`;
 
+    console.log('🔐 [AuthService] Validando token SSO...');
+    console.log('📍 URL:', url);
+    console.log('📋 Params:', params.toString());
+
     return this.http.get<TokenValidationResponse>(url, { params }).pipe(
       tap(response => {
+        console.log('✅ [AuthService] Respuesta de Moodle:', response);
         if (response.valid) {
           const user: User = {
             userid: response.userid,
@@ -44,6 +49,9 @@ export class AuthService {
             role: response.role as 'student' | 'gestor' | 'admin'
           };
           this.setSession(user);
+          console.log('👤 [AuthService] Usuario autenticado:', user);
+        } else {
+          console.error('❌ [AuthService] Token inválido:', response.error);
         }
       })
     );

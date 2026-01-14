@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterOutlet, Router, ActivatedRoute } from '@angular/router';
+import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '@core/services/auth.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -24,18 +25,30 @@ export class AppComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private router: Router,
-    private route: ActivatedRoute
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    // Capturar el token SSO de la URL si existe
-    this.route.queryParams.subscribe(params => {
-      const token = params['token'];
-      if (token) {
-        this.validateToken(token);
-      }
+    // Capturar el token SSO de la URL inicial y en cada navegación
+    this.checkForTokenInUrl();
+
+    // Escuchar cambios de navegación para capturar tokens en URLs futuras
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      this.checkForTokenInUrl();
     });
+  }
+
+  private checkForTokenInUrl(): void {
+    // Obtener el token de la URL actual
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+
+    if (token) {
+      console.log('Token detectado en URL:', token);
+      this.validateToken(token);
+    }
   }
 
   private validateToken(token: string): void {
