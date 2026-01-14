@@ -1,18 +1,22 @@
 export interface Certificate {
   id: number;
-  nombre: string;
-  curso: string;
-  fecha_emision: string;
-  codigo_verificacion: string;
-  estado: 'pending' | 'approved' | 'rejected';
-  pdf_path?: string;
-  fecha_aprobacion?: string;
-  comentarios?: string;
+  numero_certificado: string;
+  fecha_emision: number;
+  fecha_emision_formatted: string;
+  intensidad: number;
+  calificacion: number;
+  estado: string;
+  course_name: string;
+  course_shortname: string;
 }
 
 export interface CertificateListResponse {
   success: boolean;
-  data: Certificate[];
+  timestamp?: string;
+  data: {
+    certificates: Certificate[];
+    total: number;
+  };
   error?: string;
 }
 

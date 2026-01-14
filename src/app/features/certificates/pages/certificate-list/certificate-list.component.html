@@ -53,19 +53,27 @@
   <div *ngIf="!loading && !error && filteredCertificates.length > 0" class="certificates-grid">
     <mat-card *ngFor="let certificate of filteredCertificates" class="certificate-card">
       <mat-card-header>
-        <mat-card-title>{{ certificate.nombre }}</mat-card-title>
-        <mat-card-subtitle>{{ certificate.curso }}</mat-card-subtitle>
+        <mat-card-title>{{ certificate.course_name }}</mat-card-title>
+        <mat-card-subtitle>{{ certificate.course_shortname }}</mat-card-subtitle>
       </mat-card-header>
 
       <mat-card-content>
         <div class="certificate-info">
           <div class="info-row">
             <mat-icon>event</mat-icon>
-            <span>{{ certificate.fecha_emision | date:'dd/MM/yyyy' }}</span>
+            <span>{{ certificate.fecha_emision_formatted }}</span>
           </div>
           <div class="info-row">
             <mat-icon>verified</mat-icon>
-            <span class="verification-code">{{ certificate.codigo_verificacion }}</span>
+            <span class="verification-code">{{ certificate.numero_certificado }}</span>
+          </div>
+          <div class="info-row">
+            <mat-icon>schedule</mat-icon>
+            <span>{{ certificate.intensidad }} horas</span>
+          </div>
+          <div class="info-row" *ngIf="certificate.calificacion">
+            <mat-icon>grade</mat-icon>
+            <span>Calificación: {{ certificate.calificacion }}</span>
           </div>
           <div class="info-row">
             <span class="status-badge" [ngClass]="getStatusClass(certificate.estado)">
@@ -73,17 +81,12 @@
             </span>
           </div>
         </div>
-
-        <div *ngIf="certificate.comentarios" class="comments">
-          <p><strong>Comentarios:</strong> {{ certificate.comentarios }}</p>
-        </div>
       </mat-card-content>
 
       <mat-card-actions>
         <button mat-raised-button
                 color="primary"
-                (click)="downloadCertificate(certificate)"
-                [disabled]="certificate.estado !== 'approved'">
+                (click)="downloadCertificate(certificate)">
           <mat-icon>download</mat-icon>
           Descargar PDF
         </button>

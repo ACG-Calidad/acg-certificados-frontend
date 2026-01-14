@@ -65,9 +65,9 @@ export class CertificateListComponent implements OnInit {
     this.certificateService.getUserCertificates(this.user.userid).subscribe({
       next: (response) => {
         console.log('📥 [CertificateList] Respuesta del backend:', response);
-        if (response.success) {
-          this.certificates = response.data;
-          this.filteredCertificates = response.data;
+        if (response.success && response.data) {
+          this.certificates = response.data.certificates || [];
+          this.filteredCertificates = this.certificates;
           console.log('✅ [CertificateList] Certificados cargados:', this.certificates.length);
         } else {
           this.error = response.error || 'Error al cargar certificados';
@@ -91,14 +91,14 @@ export class CertificateListComponent implements OnInit {
 
     const term = this.searchTerm.toLowerCase();
     this.filteredCertificates = this.certificates.filter(cert =>
-      cert.nombre.toLowerCase().includes(term) ||
-      cert.curso.toLowerCase().includes(term) ||
-      cert.codigo_verificacion.toLowerCase().includes(term)
+      cert.course_name.toLowerCase().includes(term) ||
+      cert.course_shortname.toLowerCase().includes(term) ||
+      cert.numero_certificado.toLowerCase().includes(term)
     );
   }
 
   downloadCertificate(certificate: Certificate): void {
-    const fileName = `${certificate.nombre.replace(/\s+/g, '_')}.pdf`;
+    const fileName = `certificado_${certificate.numero_certificado}.pdf`;
     this.certificateService.triggerPdfDownload(certificate.id, fileName);
   }
 
