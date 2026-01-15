@@ -44,20 +44,24 @@
 
           <div class="certificate-details">
             <div class="detail-row">
-              <span class="label">Nombre:</span>
-              <span class="value">{{ certificate.nombre }}</span>
+              <span class="label">Curso:</span>
+              <span class="value">{{ certificate.course_name }}</span>
             </div>
             <div class="detail-row">
-              <span class="label">Curso:</span>
-              <span class="value">{{ certificate.curso }}</span>
+              <span class="label">Código del curso:</span>
+              <span class="value">{{ certificate.course_shortname }}</span>
             </div>
             <div class="detail-row">
               <span class="label">Fecha de emisión:</span>
-              <span class="value">{{ certificate.fecha_emision | date:'dd/MM/yyyy' }}</span>
+              <span class="value">{{ certificate.fecha_emision_formatted }}</span>
             </div>
             <div class="detail-row">
-              <span class="label">Código:</span>
-              <span class="value verification-code">{{ certificate.codigo_verificacion }}</span>
+              <span class="label">Intensidad:</span>
+              <span class="value">{{ certificate.intensidad }} horas</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Código de verificación:</span>
+              <span class="value verification-code">{{ certificate.numero_certificado }}</span>
             </div>
           </div>
 

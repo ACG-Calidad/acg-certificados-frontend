@@ -1,0 +1,21 @@
+<nav class="sidebar" [class.collapsed]="!isOpen">
+  <mat-nav-list>
+    @for (item of visibleMenuItems; track item.route) {
+      <a mat-list-item
+         [routerLink]="item.route"
+         routerLinkActive="active"
+         class="menu-item">
+        <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+        <span matListItemTitle *ngIf="isOpen">{{ item.label }}</span>
+      </a>
+    }
+  </mat-nav-list>
+
+  <div class="sidebar-footer" *ngIf="isOpen">
+    <mat-divider></mat-divider>
+    <a mat-list-item routerLink="/validar" class="menu-item validation-link">
+      <mat-icon matListItemIcon>verified</mat-icon>
+      <span matListItemTitle>Validar Certificado</span>
+    </a>
+  </div>
+</nav>

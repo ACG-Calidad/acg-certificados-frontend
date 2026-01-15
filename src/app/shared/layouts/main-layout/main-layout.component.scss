@@ -1,0 +1,27 @@
+.main-layout {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.main-content {
+  margin-left: 260px;
+  margin-top: 64px;
+  padding: 24px;
+  min-height: calc(100vh - 64px);
+  transition: margin-left 0.3s ease;
+
+  &.sidebar-collapsed {
+    margin-left: 72px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    padding: 16px;
+
+    &.sidebar-collapsed {
+      margin-left: 0;
+    }
+  }
+}

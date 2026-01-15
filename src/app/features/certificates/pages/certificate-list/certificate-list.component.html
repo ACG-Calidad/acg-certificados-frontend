@@ -1,20 +1,12 @@
 <div class="certificate-list-container">
-  <!-- Header -->
-  <header class="header">
-    <div class="header-content">
-      <div class="user-info">
-        <h1>Mis Certificados</h1>
-        <p class="welcome-text">Bienvenido, {{ user?.firstname }} {{ user?.lastname }}</p>
-      </div>
-      <button mat-raised-button color="warn" (click)="logout()">
-        <mat-icon>logout</mat-icon>
-        Salir
-      </button>
-    </div>
-  </header>
+  <!-- Page Title -->
+  <div class="page-header">
+    <h1>Mis Certificados</h1>
+    <p class="subtitle">Certificados emitidos a tu nombre</p>
+  </div>
 
-  <!-- Search Bar -->
-  <div class="search-container">
+  <!-- Search Bar (solo si hay certificados) -->
+  <div class="search-container" *ngIf="certificates.length > 0">
     <mat-form-field appearance="outline" class="search-field">
       <mat-label>Buscar certificado</mat-label>
       <input matInput
@@ -54,14 +46,13 @@
     <mat-card *ngFor="let certificate of filteredCertificates" class="certificate-card">
       <mat-card-header>
         <mat-card-title>{{ certificate.course_name }}</mat-card-title>
-        <mat-card-subtitle>{{ certificate.course_shortname }}</mat-card-subtitle>
       </mat-card-header>
 
       <mat-card-content>
         <div class="certificate-info">
           <div class="info-row">
             <mat-icon>event</mat-icon>
-            <span>{{ certificate.fecha_emision_formatted }}</span>
+            <span>{{ formatDate(certificate.fecha_emision) }}</span>
           </div>
           <div class="info-row">
             <mat-icon>verified</mat-icon>
@@ -75,11 +66,6 @@
             <mat-icon>grade</mat-icon>
             <span>Calificación: {{ certificate.calificacion }}</span>
           </div>
-          <div class="info-row">
-            <span class="status-badge" [ngClass]="getStatusClass(certificate.estado)">
-              {{ getStatusLabel(certificate.estado) }}
-            </span>
-          </div>
         </div>
       </mat-card-content>
 
@@ -89,10 +75,6 @@
                 (click)="downloadCertificate(certificate)">
           <mat-icon>download</mat-icon>
           Descargar PDF
-        </button>
-        <button mat-button color="accent">
-          <mat-icon>share</mat-icon>
-          Compartir
         </button>
       </mat-card-actions>
     </mat-card>

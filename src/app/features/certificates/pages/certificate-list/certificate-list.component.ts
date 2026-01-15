@@ -102,23 +102,11 @@ export class CertificateListComponent implements OnInit {
     this.certificateService.triggerPdfDownload(certificate.id, fileName);
   }
 
-  getStatusLabel(status: string): string {
-    const labels: Record<string, string> = {
-      'pending': 'Pendiente',
-      'approved': 'Aprobado',
-      'rejected': 'Rechazado'
-    };
-    return labels[status] || status;
-  }
-
-  getStatusClass(status: string): string {
-    return `status-${status}`;
-  }
-
-  logout(): void {
-    this.authService.logout();
-    window.location.href = this.user?.role === 'admin'
-      ? 'http://localhost:8082/admin'
-      : 'http://localhost:8082';
+  formatDate(timestamp: number): string {
+    const date = new Date(timestamp * 1000);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
   }
 }

@@ -10,7 +10,7 @@ import { Certificate, CertificateListResponse, CertificateValidationResponse } f
 export class CertificateService {
   private apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /**
    * Obtiene la lista de certificados de un usuario
