@@ -42,11 +42,6 @@ export const routes: Routes = [
               .then(m => m.PendingUsersComponent)
           },
           {
-            path: 'generate',
-            loadComponent: () => import('./features/management/pages/generate-certificates/generate-certificates.component')
-              .then(m => m.GenerateCertificatesComponent)
-          },
-          {
             path: 'notifications',
             loadComponent: () => import('./features/management/pages/notifications/notifications.component')
               .then(m => m.NotificationsComponent)
@@ -63,11 +58,6 @@ export const routes: Routes = [
         canActivate: [adminGuard],
         children: [
           {
-            path: 'reports',
-            loadComponent: () => import('./features/admin/pages/reports/reports.component')
-              .then(m => m.ReportsComponent)
-          },
-          {
             path: 'templates',
             loadComponent: () => import('./features/admin/pages/templates/templates.component')
               .then(m => m.TemplatesComponent)
@@ -79,7 +69,7 @@ export const routes: Routes = [
           },
           {
             path: '',
-            redirectTo: 'reports',
+            redirectTo: 'templates',
             pathMatch: 'full'
           }
         ]

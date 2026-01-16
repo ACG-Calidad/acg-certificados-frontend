@@ -37,6 +37,7 @@ import {
 export class AdminDashboardComponent implements OnInit {
   loading = true;
   error: string | null = null;
+  downloadingReport = false;
 
   stats: DashboardStats = {
     total_certificates: 0,
@@ -155,5 +156,25 @@ export class AdminDashboardComponent implements OnInit {
 
   getBarHeight(count: number): number {
     return (count / this.getMaxMonthlyCount()) * 100;
+  }
+
+  downloadReport(): void {
+    this.downloadingReport = true;
+    this.adminService.downloadCertificatesReport().subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        const today = new Date().toISOString().split('T')[0];
+        link.download = `reporte-certificados-${today}.xlsx`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+        this.downloadingReport = false;
+      },
+      error: (error) => {
+        console.error('Error descargando reporte:', error);
+        this.downloadingReport = false;
+      }
+    });
   }
 }

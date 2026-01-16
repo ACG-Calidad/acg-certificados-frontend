@@ -8,6 +8,7 @@ export interface Certificate {
   estado: string;
   course_name: string;
   course_shortname: string;
+  participant_name?: string; // Solo presente en respuestas de validación pública
 }
 
 export interface CertificateListResponse {
@@ -21,7 +22,11 @@ export interface CertificateListResponse {
 }
 
 export interface CertificateValidationResponse {
-  valid: boolean;
-  certificate?: Certificate;
-  error?: string;
+  success: boolean;
+  message?: string;
+  timestamp?: string;
+  data: {
+    valid: boolean;
+    certificate?: Certificate;
+  };
 }

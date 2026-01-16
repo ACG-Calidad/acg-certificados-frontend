@@ -1,0 +1,184 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>Notificaciones</h1>
+    <p class="subtitle">Certificados generados pendientes de notificar a los participantes</p>
+  </div>
+
+  <!-- Filters -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-row">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Buscar</mat-label>
+          <input matInput
+                 [(ngModel)]="searchTerm"
+                 (ngModelChange)="applyFilters()"
+                 placeholder="Nombre, email o número de certificado">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="course-field">
+          <mat-label>Curso</mat-label>
+          <mat-select [(ngModel)]="selectedCourse" (ngModelChange)="applyFilters()">
+            <mat-option [value]="null">Todos los cursos</mat-option>
+            @for (course of courses; track course.id) {
+              <mat-option [value]="course.id">{{ course.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-button color="primary" (click)="clearFilters()">
+          <mat-icon>clear</mat-icon>
+          Limpiar filtros
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Actions Bar -->
+  <div class="actions-bar">
+    <div class="selection-info">
+      @if (selection.selected.length > 0) {
+        <span class="selected-count">{{ selection.selected.length }} seleccionado(s)</span>
+      }
+    </div>
+    <div class="actions">
+      <button mat-raised-button
+              color="primary"
+              [disabled]="selection.selected.length === 0 || sending"
+              (click)="openSendDialog()">
+        <mat-icon>send</mat-icon>
+        Enviar Notificaciones
+      </button>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  @if (error) {
+    <div class="error-message">
+      <mat-icon>error</mat-icon>
+      <span>{{ error }}</span>
+      <button mat-button (click)="loadPendingNotifications()">Reintentar</button>
+    </div>
+  }
+
+  <!-- Loading Spinner -->
+  @if (loading) {
+    <div class="loading-container">
+      <mat-spinner diameter="48"></mat-spinner>
+      <p>Cargando notificaciones pendientes...</p>
+    </div>
+  }
+
+  <!-- Sending Overlay -->
+  @if (sending) {
+    <div class="sending-overlay">
+      <mat-spinner diameter="48"></mat-spinner>
+      <p>Enviando notificaciones...</p>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading && !error && filteredNotifications.length === 0) {
+    <mat-card class="empty-state">
+      <mat-card-content>
+        <mat-icon>mark_email_read</mat-icon>
+        <h3>No hay notificaciones pendientes</h3>
+        <p>Todos los certificados generados han sido notificados</p>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- Notifications Table -->
+  @if (!loading && filteredNotifications.length > 0) {
+    <mat-card class="table-card">
+      <mat-card-content>
+        <table mat-table [dataSource]="filteredNotifications" class="notifications-table">
+
+          <!-- Checkbox Column -->
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef>
+              <mat-checkbox
+                [checked]="isAllSelected()"
+                [indeterminate]="!isAllSelected() && selection.selected.length > 0"
+                (change)="toggleAllSelection()">
+              </mat-checkbox>
+            </th>
+            <td mat-cell *matCellDef="let notification">
+              <mat-checkbox
+                [checked]="selection.isSelected(notification)"
+                (click)="$event.stopPropagation()"
+                (change)="selection.toggle(notification)">
+              </mat-checkbox>
+            </td>
+          </ng-container>
+
+          <!-- Certificate Number Column -->
+          <ng-container matColumnDef="certificate">
+            <th mat-header-cell *matHeaderCellDef>Certificado</th>
+            <td mat-cell *matCellDef="let notification">
+              <span class="certificate-number">{{ notification.numero_certificado }}</span>
+            </td>
+          </ng-container>
+
+          <!-- User Column -->
+          <ng-container matColumnDef="user">
+            <th mat-header-cell *matHeaderCellDef>Participante</th>
+            <td mat-cell *matCellDef="let notification">
+              <div class="user-info">
+                <span class="user-name">{{ notification.firstname }} {{ notification.lastname }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Email Column -->
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef>Email</th>
+            <td mat-cell *matCellDef="let notification">
+              <span class="email">{{ notification.email }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Course Column -->
+          <ng-container matColumnDef="course">
+            <th mat-header-cell *matHeaderCellDef>Curso</th>
+            <td mat-cell *matCellDef="let notification">
+              <span class="course-name" [matTooltip]="notification.course_name">
+                {{ notification.course_shortname }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Grade Column -->
+          <ng-container matColumnDef="grade">
+            <th mat-header-cell *matHeaderCellDef>Calificación</th>
+            <td mat-cell *matCellDef="let notification">
+              <span class="grade" [class.high-grade]="notification.grade >= 80">
+                {{ notification.grade | number:'1.0-1' }}%
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Fecha Emisión Column -->
+          <ng-container matColumnDef="fecha_emision">
+            <th mat-header-cell *matHeaderCellDef>Fecha Emisión</th>
+            <td mat-cell *matCellDef="let notification">
+              {{ formatDate(notification.fecha_emision) }}
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+              [class.selected]="selection.isSelected(row)"
+              (click)="selection.toggle(row)"></tr>
+        </table>
+      </mat-card-content>
+    </mat-card>
+
+    <div class="table-footer">
+      <span class="total-count">
+        Total: {{ filteredNotifications.length }} certificado(s) pendiente(s) de notificar
+      </span>
+    </div>
+  }
+</div>

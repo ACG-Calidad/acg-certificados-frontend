@@ -13,12 +13,15 @@
 
       <mat-card-content>
         <!-- Form -->
-        <div class="validation-form" *ngIf="!validated">
-          <mat-form-field appearance="outline" class="code-field">
+        <div class="validation-form"
+             *ngIf="!validated">
+          <mat-form-field appearance="outline"
+                          class="code-field">
             <mat-label>Código de Verificación</mat-label>
+            <span matTextPrefix>CV-</span>
             <input matInput
                    [(ngModel)]="verificationCode"
-                   placeholder="Ej: ABC123XYZ789"
+                   placeholder="Ej: 1234"
                    (keyup.enter)="validateCertificate()">
             <mat-icon matPrefix>key</mat-icon>
           </mat-form-field>
@@ -28,14 +31,16 @@
                   (click)="validateCertificate()"
                   [disabled]="!verificationCode.trim() || loading"
                   class="validate-button">
-            <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+            <mat-spinner *ngIf="loading"
+                         diameter="20"></mat-spinner>
             <mat-icon *ngIf="!loading">search</mat-icon>
             {{ loading ? 'Validando...' : 'Validar Certificado' }}
           </button>
         </div>
 
         <!-- Valid Certificate -->
-        <div class="validation-result success" *ngIf="validated && isValid && certificate">
+        <div class="validation-result success"
+             *ngIf="validated && isValid && certificate">
           <div class="result-icon">
             <mat-icon>check_circle</mat-icon>
           </div>
@@ -43,6 +48,11 @@
           <p class="result-message">Este certificado es auténtico y fue emitido por ACG Calidad.</p>
 
           <div class="certificate-details">
+            <div class="detail-row"
+                 *ngIf="certificate.participant_name">
+              <span class="label">Participante:</span>
+              <span class="value participant-name">{{ certificate.participant_name }}</span>
+            </div>
             <div class="detail-row">
               <span class="label">Curso:</span>
               <span class="value">{{ certificate.course_name }}</span>
@@ -65,13 +75,16 @@
             </div>
           </div>
 
-          <button mat-raised-button color="primary" (click)="reset()">
+          <button mat-raised-button
+                  color="primary"
+                  (click)="reset()">
             Validar Otro Certificado
           </button>
         </div>
 
         <!-- Invalid Certificate -->
-        <div class="validation-result error" *ngIf="validated && !isValid">
+        <div class="validation-result error"
+             *ngIf="validated && !isValid">
           <div class="result-icon">
             <mat-icon>cancel</mat-icon>
           </div>
@@ -83,7 +96,9 @@
             Por favor, verifique que el código sea correcto o contacte con ACG Calidad para más información.
           </p>
 
-          <button mat-raised-button color="primary" (click)="reset()">
+          <button mat-raised-button
+                  color="primary"
+                  (click)="reset()">
             Intentar Nuevamente
           </button>
         </div>
@@ -99,12 +114,12 @@
         </mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <p>El código de verificación es un identificador único que aparece en cada certificado emitido por ACG Calidad.</p>
+        <p>El código de verificación es un identificador único que aparece en cada certificado emitido por ACG Calidad.
+        </p>
         <p><strong>¿Dónde encontrarlo?</strong></p>
         <ul>
           <li>En la parte inferior del certificado PDF</li>
-          <li>Formato: letras y números (Ej: ABC123XYZ789)</li>
-          <li>Es sensible a mayúsculas y minúsculas</li>
+          <li>Formato: inserte únicamente los números (Ej: 1234)</li>
         </ul>
       </mat-card-content>
     </mat-card>

@@ -1,0 +1,230 @@
+.page-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 24px;
+
+  h1 {
+    margin: 0 0 8px 0;
+    color: #333;
+    font-size: 28px;
+    font-weight: 500;
+  }
+
+  .subtitle {
+    margin: 0;
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 14px;
+  }
+}
+
+.filters-card {
+  margin-bottom: 16px;
+
+  .filters-row {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+
+    .search-field {
+      flex: 1;
+      min-width: 250px;
+    }
+
+    .course-field {
+      min-width: 250px;
+    }
+  }
+}
+
+.actions-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 8px 0;
+
+  .selection-info {
+    .selected-count {
+      font-weight: 500;
+      color: #0066CC;
+    }
+  }
+
+  .actions {
+    display: flex;
+    gap: 12px;
+  }
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  background-color: #ffebee;
+  border-radius: 4px;
+  margin-bottom: 16px;
+
+  mat-icon {
+    color: #c62828;
+  }
+
+  span {
+    flex: 1;
+    color: #c62828;
+  }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px;
+
+  p {
+    margin-top: 16px;
+    color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+.sending-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+
+  p {
+    margin-top: 16px;
+    color: rgba(0, 0, 0, 0.7);
+    font-size: 16px;
+  }
+}
+
+.empty-state {
+  mat-card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 64px 24px;
+    text-align: center;
+
+    mat-icon {
+      font-size: 72px;
+      width: 72px;
+      height: 72px;
+      color: #4caf50;
+      opacity: 0.7;
+      margin-bottom: 16px;
+    }
+
+    h3 {
+      margin: 0 0 8px 0;
+      color: #333;
+      font-weight: 500;
+    }
+
+    p {
+      margin: 0;
+      color: rgba(0, 0, 0, 0.6);
+    }
+  }
+}
+
+.table-card {
+  overflow: hidden;
+}
+
+.notifications-table {
+  width: 100%;
+
+  .certificate-number {
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 500;
+    color: #0066CC;
+  }
+
+  .user-info {
+    .user-name {
+      display: block;
+      font-weight: 500;
+    }
+  }
+
+  .email {
+    color: rgba(0, 0, 0, 0.7);
+    font-size: 13px;
+  }
+
+  .course-name {
+    display: inline-block;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .grade {
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background-color: #fff3e0;
+    color: #e65100;
+
+    &.high-grade {
+      background-color: #e8f5e9;
+      color: #2e7d32;
+    }
+  }
+
+  tr.mat-mdc-row {
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba(0, 102, 204, 0.04);
+    }
+
+    &.selected {
+      background-color: rgba(0, 102, 204, 0.08);
+    }
+  }
+
+  th.mat-mdc-header-cell {
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.7);
+  }
+}
+
+.table-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 16px;
+
+  .total-count {
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 14px;
+  }
+}
+
+// Snackbar styles
+::ng-deep {
+  .success-snackbar {
+    --mdc-snackbar-container-color: #4caf50;
+    --mdc-snackbar-supporting-text-color: white;
+  }
+
+  .warning-snackbar {
+    --mdc-snackbar-container-color: #ff9800;
+    --mdc-snackbar-supporting-text-color: white;
+  }
+}

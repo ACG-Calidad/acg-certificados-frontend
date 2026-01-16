@@ -5,7 +5,12 @@
          [routerLink]="item.route"
          routerLinkActive="active"
          class="menu-item">
-        <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+        <mat-icon matListItemIcon
+                  [matBadge]="getBadgeValue(item)"
+                  [matBadgeHidden]="!getBadgeValue(item)"
+                  matBadgeColor="warn"
+                  matBadgeSize="small"
+                  matBadgePosition="above after">{{ item.icon }}</mat-icon>
         <span matListItemTitle *ngIf="isOpen">{{ item.label }}</span>
       </a>
     }

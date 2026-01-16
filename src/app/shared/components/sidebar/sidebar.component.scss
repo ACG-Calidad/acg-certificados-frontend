@@ -38,6 +38,19 @@
     mat-icon {
       color: rgba(0, 0, 0, 0.54);
       margin-right: 16px;
+      position: relative;
+      overflow: visible;
+
+      // Badge styling
+      ::ng-deep .mat-badge-content {
+        font-size: 10px;
+        font-weight: 600;
+        min-width: 18px;
+        height: 18px;
+        line-height: 18px;
+        right: -8px !important;
+        top: -4px !important;
+      }
     }
 
     &:hover {

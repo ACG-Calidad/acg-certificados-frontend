@@ -1,11 +1,15 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatBadgeModule } from '@angular/material/badge';
+import { Subscription, interval } from 'rxjs';
+import { startWith, switchMap } from 'rxjs/operators';
 
 import { AuthService } from '@core/services/auth.service';
+import { AdminService, BadgeCounts } from '@core/services/admin.service';
 import { User } from '@core/models/user.model';
 
 interface MenuItem {
@@ -13,6 +17,7 @@ interface MenuItem {
   label: string;
   route: string;
   roles: string[];
+  badgeKey?: keyof BadgeCounts;
 }
 
 @Component({
@@ -23,15 +28,22 @@ interface MenuItem {
     RouterModule,
     MatListModule,
     MatIconModule,
-    MatDividerModule
+    MatDividerModule,
+    MatBadgeModule
   ],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss']
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit, OnDestroy {
   @Input() isOpen = true;
 
   user: User | null = null;
+  badgeCounts: BadgeCounts = {
+    pending_approved: 0,
+    pending_notifications: 0
+  };
+
+  private badgeSubscription?: Subscription;
 
   menuItems: MenuItem[] = [
     {
@@ -50,25 +62,15 @@ export class SidebarComponent {
       icon: 'pending_actions',
       label: 'Pendientes',
       route: '/management/pending',
-      roles: ['admin', 'gestor']
-    },
-    {
-      icon: 'add_circle',
-      label: 'Generar Certificados',
-      route: '/management/generate',
-      roles: ['admin', 'gestor']
+      roles: ['admin', 'gestor'],
+      badgeKey: 'pending_approved'
     },
     {
       icon: 'notifications',
       label: 'Notificaciones',
       route: '/management/notifications',
-      roles: ['admin', 'gestor']
-    },
-    {
-      icon: 'assessment',
-      label: 'Reportes',
-      route: '/admin/reports',
-      roles: ['admin']
+      roles: ['admin', 'gestor'],
+      badgeKey: 'pending_notifications'
     },
     {
       icon: 'article',
@@ -84,12 +86,51 @@ export class SidebarComponent {
     }
   ];
 
-  constructor(private authService: AuthService) {
+  constructor(
+    private authService: AuthService,
+    private adminService: AdminService
+  ) {
     this.user = this.authService.getUserData();
+  }
+
+  ngOnInit(): void {
+    // Solo cargar badges si el usuario es admin o gestor
+    if (this.user?.role === 'admin' || this.user?.role === 'gestor') {
+      this.loadBadgeCounts();
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.badgeSubscription?.unsubscribe();
+  }
+
+  private loadBadgeCounts(): void {
+    // Cargar badges inmediatamente y luego cada 60 segundos
+    this.badgeSubscription = interval(60000)
+      .pipe(
+        startWith(0),
+        switchMap(() => this.adminService.getBadgeCounts())
+      )
+      .subscribe({
+        next: (response) => {
+          if (response.success && response.data) {
+            this.badgeCounts = response.data;
+          }
+        },
+        error: (error) => {
+          console.error('Error loading badge counts:', error);
+        }
+      });
   }
 
   get visibleMenuItems(): MenuItem[] {
     const userRole = this.user?.role || '';
     return this.menuItems.filter(item => item.roles.includes(userRole));
+  }
+
+  getBadgeValue(item: MenuItem): number | null {
+    if (!item.badgeKey) return null;
+    const count = this.badgeCounts[item.badgeKey];
+    return count > 0 ? count : null;
   }
 }

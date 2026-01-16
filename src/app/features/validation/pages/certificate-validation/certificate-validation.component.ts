@@ -35,7 +35,7 @@ export class CertificateValidationComponent {
   certificate: Certificate | null = null;
   errorMessage = '';
 
-  constructor(private certificateService: CertificateService) {}
+  constructor(private certificateService: CertificateService) { }
 
   validateCertificate(): void {
     if (!this.verificationCode.trim()) {
@@ -46,13 +46,13 @@ export class CertificateValidationComponent {
     this.validated = false;
     this.errorMessage = '';
 
-    this.certificateService.validateCertificate(this.verificationCode.trim()).subscribe({
+    this.certificateService.validateCertificate('CV-' + this.verificationCode.trim()).subscribe({
       next: (response) => {
         this.loading = false;
         this.validated = true;
-        this.isValid = response.valid;
-        this.certificate = response.certificate || null;
-        this.errorMessage = response.error || '';
+        this.isValid = response.data.valid;
+        this.certificate = response.data.certificate || null;
+        this.errorMessage = !response.data.valid ? (response.message || '') : '';
       },
       error: (error) => {
         this.loading = false;
