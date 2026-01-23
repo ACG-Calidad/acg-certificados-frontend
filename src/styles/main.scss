@@ -80,3 +80,34 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+// Visual Field Editor Dialog - 90% width/height style
+.visual-editor-dialog.cdk-overlay-pane.mat-mdc-dialog-panel {
+  max-width: 90vw !important;
+  max-height: 90vh !important;
+  width: 90vw;
+  height: 90vh;
+
+  .mat-mdc-dialog-container {
+    padding: 0;
+    max-width: none;
+    max-height: none;
+
+    .mat-mdc-dialog-surface {
+      border-radius: 8px;
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+// Snackbar styles
+.success-snackbar {
+  --mdc-snackbar-container-color: #4caf50;
+  --mdc-snackbar-supporting-text-color: white;
+}
+
+.error-snackbar {
+  --mdc-snackbar-container-color: #f44336;
+  --mdc-snackbar-supporting-text-color: white;
+}

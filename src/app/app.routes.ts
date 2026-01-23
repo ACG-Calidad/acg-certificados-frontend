@@ -47,6 +47,11 @@ export const routes: Routes = [
               .then(m => m.NotificationsComponent)
           },
           {
+            path: 'generated',
+            loadComponent: () => import('./features/management/pages/generated-certificates/generated-certificates.component')
+              .then(m => m.GeneratedCertificatesComponent)
+          },
+          {
             path: '',
             redirectTo: 'pending',
             pathMatch: 'full'

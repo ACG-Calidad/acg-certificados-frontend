@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, BehaviorSubject, interval } from 'rxjs';
 import { switchMap, startWith } from 'rxjs/operators';
 import { environment } from '@environments/environment';
@@ -16,6 +16,51 @@ export interface BadgeCountsResponse {
   success: boolean;
   data?: BadgeCounts;
   error?: string;
+}
+
+export interface GeneratedCertificate {
+  id: number;
+  numero_certificado: string;
+  userid: number;
+  nombre: string;
+  apellido: string;
+  documento: string;
+  course_id: number;
+  course_shortname: string;
+  course_name: string;
+  fecha_emision: string;
+  fecha_emision_formatted: string;
+  estado: 'generado' | 'notificado';
+  pdf_path: string | null;
+}
+
+export interface GeneratedCertificatesResponse {
+  success: boolean;
+  message?: string;
+  data: {
+    certificates: GeneratedCertificate[];
+    pagination: {
+      total: number;
+      page: number;
+      limit: number;
+      total_pages: number;
+    };
+  };
+}
+
+export interface RegenerateCertificatesResponse {
+  success: boolean;
+  message?: string;
+  data?: {
+    regenerated: number;
+    failed: number;
+    details: Array<{
+      id: number;
+      numero_certificado: string;
+      success: boolean;
+      error?: string;
+    }>;
+  };
 }
 
 @Injectable({
@@ -99,5 +144,71 @@ export class AdminService {
     return this.http.get(`${this.apiUrl}/admin/report/export`, {
       responseType: 'blob'
     });
+  }
+
+  /**
+   * Obtiene la lista de certificados generados con paginación y filtros
+   * @param search Término de búsqueda (nombre, documento, curso)
+   * @param sortField Campo para ordenar
+   * @param sortOrder Dirección del orden (asc/desc)
+   * @param page Número de página
+   * @param limit Registros por página
+   * @returns Observable con certificados y paginación
+   */
+  getGeneratedCertificates(
+    search: string = '',
+    sortField: string = 'id',
+    sortOrder: string = 'desc',
+    page: number = 1,
+    limit: number = 25
+  ): Observable<GeneratedCertificatesResponse> {
+    let params = new HttpParams()
+      .set('sort', sortField)
+      .set('order', sortOrder)
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+
+    if (search) {
+      params = params.set('search', search);
+    }
+
+    return this.http.get<GeneratedCertificatesResponse>(
+      `${this.apiUrl}/admin/certificates/generated`,
+      { params }
+    );
+  }
+
+  /**
+   * Regenera certificados (actualiza fecha y genera nuevo PDF)
+   * @param certificateIds IDs de certificados a regenerar
+   * @returns Observable con resultado de la operación
+   */
+  regenerateCertificates(certificateIds: number[]): Observable<RegenerateCertificatesResponse> {
+    return this.http.post<RegenerateCertificatesResponse>(
+      `${this.apiUrl}/admin/certificates/regenerate`,
+      { certificate_ids: certificateIds }
+    );
+  }
+
+  /**
+   * Descarga múltiples certificados como ZIP
+   * @param certificateIds IDs de certificados a descargar
+   * @returns Observable con el blob del archivo ZIP
+   */
+  downloadCertificatesZip(certificateIds: number[]): Observable<Blob> {
+    return this.http.post(
+      `${this.apiUrl}/admin/certificates/download-zip`,
+      { certificate_ids: certificateIds },
+      { responseType: 'blob' }
+    );
+  }
+
+  /**
+   * Descarga un certificado individual
+   * @param certificateId ID del certificado
+   */
+  downloadCertificate(certificateId: number): void {
+    const url = `${this.apiUrl}/certificates/${certificateId}/download`;
+    window.open(url, '_blank');
   }
 }

@@ -1,0 +1,163 @@
+<div class="settings-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1>Configuración</h1>
+    <p class="subtitle">Ajustes del sistema de certificados</p>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>Cargando configuración...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error && !loading) {
+    <mat-card class="error-card">
+      <mat-card-content>
+        <mat-icon>error</mat-icon>
+        <p>{{ error }}</p>
+        <button mat-raised-button color="primary" (click)="loadSettings()">
+          Reintentar
+        </button>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- Settings Content -->
+  @if (!loading && !error) {
+    <div class="settings-grid">
+      <!-- Certificados -->
+      <mat-card class="settings-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>workspace_premium</mat-icon>
+            Certificados
+          </mat-card-title>
+          <mat-card-subtitle>Configuración de generación de certificados</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Prefijo de certificados</mat-label>
+            <input matInput [(ngModel)]="settings.certificate_prefix" placeholder="CV-">
+            <mat-hint>Prefijo para números de certificado (ej: CV-1234)</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Intensidad horaria por defecto</mat-label>
+            <input matInput type="number" [(ngModel)]="settings.default_intensity" min="1" max="1000">
+            <span matTextSuffix>horas</span>
+            <mat-hint>Horas por defecto para cursos sin intensidad definida</mat-hint>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Notificaciones -->
+      <mat-card class="settings-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>email</mat-icon>
+            Notificaciones
+          </mat-card-title>
+          <mat-card-subtitle>Configuración de envío de emails</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Email del gestor</mat-label>
+            <input matInput type="email" [(ngModel)]="settings.notification_email" placeholder="email@ejemplo.com">
+            <mat-icon matPrefix>mail</mat-icon>
+            <mat-hint>Email de contacto para notificaciones</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Nombre del remitente</mat-label>
+            <input matInput [(ngModel)]="settings.email_from_name" placeholder="Grupo Capacitación ACG">
+            <mat-hint>Nombre que aparece en los emails enviados</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Hora de ejecución del cron</mat-label>
+            <input matInput type="time" [(ngModel)]="settings.cron_execution_time">
+            <mat-icon matPrefix>schedule</mat-icon>
+            <mat-hint>Hora diaria para envío automático de notificaciones</mat-hint>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Google Apps Script -->
+      <mat-card class="settings-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>webhook</mat-icon>
+            Google Apps Script
+          </mat-card-title>
+          <mat-card-subtitle>Integración para envío de emails</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="toggle-row">
+            <mat-slide-toggle [(ngModel)]="settings.gas_enabled" color="primary">
+              Habilitar integración GAS
+            </mat-slide-toggle>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width" [class.disabled]="!settings.gas_enabled">
+            <mat-label>URL del Webhook</mat-label>
+            <input matInput [(ngModel)]="settings.gas_webhook_url"
+                   placeholder="https://script.google.com/macros/s/..."
+                   [disabled]="!settings.gas_enabled">
+            <mat-icon matPrefix>link</mat-icon>
+            <mat-hint>URL del script de Google Apps Script</mat-hint>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Validación Pública -->
+      <mat-card class="settings-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>verified</mat-icon>
+            Validación Pública
+          </mat-card-title>
+          <mat-card-subtitle>URL para validar certificados</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>URL de validación</mat-label>
+            <input matInput [(ngModel)]="settings.validation_url"
+                   placeholder="https://certificados.acgcalidad.co/validar">
+            <mat-icon matPrefix>public</mat-icon>
+            <button mat-icon-button matSuffix (click)="copyValidationUrl()"
+                    matTooltip="Copiar URL">
+              <mat-icon>content_copy</mat-icon>
+            </button>
+            <mat-hint>URL pública donde se pueden validar los certificados</mat-hint>
+          </mat-form-field>
+
+          <div class="info-box">
+            <mat-icon>info</mat-icon>
+            <p>Esta URL aparece en los certificados PDF generados y en las notificaciones enviadas a los participantes.</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="actions-bar">
+      <button mat-stroked-button (click)="resetSettings()" [disabled]="!hasChanges() || saving">
+        <mat-icon>undo</mat-icon>
+        Descartar cambios
+      </button>
+      <button mat-raised-button color="primary" (click)="saveSettings()"
+              [disabled]="!hasChanges() || saving">
+        @if (saving) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          <mat-icon>save</mat-icon>
+        }
+        Guardar configuración
+      </button>
+    </div>
+  }
+</div>

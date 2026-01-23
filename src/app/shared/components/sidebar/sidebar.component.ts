@@ -73,6 +73,12 @@ export class SidebarComponent implements OnInit, OnDestroy {
       badgeKey: 'pending_notifications'
     },
     {
+      icon: 'folder_open',
+      label: 'Certificados Generados',
+      route: '/management/generated',
+      roles: ['admin', 'gestor']
+    },
+    {
       icon: 'article',
       label: 'Plantillas',
       route: '/admin/templates',

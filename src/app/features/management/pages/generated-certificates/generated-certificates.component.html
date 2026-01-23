@@ -1,0 +1,202 @@
+<mat-card class="generated-certificates-card">
+  <mat-card-header>
+    <mat-card-title>
+      <mat-icon>verified</mat-icon>
+      Certificados Generados
+    </mat-card-title>
+    <mat-card-subtitle>
+      Gestione todos los certificados emitidos
+    </mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <!-- Toolbar de búsqueda y acciones -->
+    <div class="toolbar">
+      <div class="search-section">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Buscar</mat-label>
+          <input matInput
+                 [(ngModel)]="searchTerm"
+                 (keyup.enter)="onSearchChange()"
+                 placeholder="Nombre, documento, curso o ID certificado">
+          @if (searchTerm) {
+            <button matSuffix mat-icon-button (click)="clearSearch()">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </mat-form-field>
+        <button mat-stroked-button color="primary" (click)="onSearchChange()">
+          <mat-icon>search</mat-icon>
+          Buscar
+        </button>
+      </div>
+
+      <div class="actions-section">
+        <button mat-stroked-button
+                color="primary"
+                [disabled]="selection.selected.length === 0 || actionLoading"
+                (click)="downloadSelected()">
+          <mat-icon>download</mat-icon>
+          Descargar ({{ selection.selected.length }})
+        </button>
+        <button mat-stroked-button
+                color="warn"
+                [disabled]="selection.selected.length === 0 || actionLoading"
+                (click)="regenerateSelected()">
+          <mat-icon>refresh</mat-icon>
+          Regenerar ({{ selection.selected.length }})
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading spinner -->
+    @if (loading) {
+      <div class="loading-container">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Cargando certificados...</p>
+      </div>
+    }
+
+    <!-- Error message -->
+    @if (error && !loading) {
+      <div class="error-container">
+        <mat-icon>error_outline</mat-icon>
+        <p>{{ error }}</p>
+        <button mat-stroked-button color="primary" (click)="loadCertificates()">
+          Reintentar
+        </button>
+      </div>
+    }
+
+    <!-- Empty state -->
+    @if (!loading && !error && certificates.length === 0) {
+      <div class="empty-container">
+        <mat-icon>inbox</mat-icon>
+        <p>No hay certificados generados</p>
+      </div>
+    }
+
+    <!-- Tabla de certificados -->
+    @if (!loading && !error && certificates.length > 0) {
+      <div class="table-container">
+        <table mat-table [dataSource]="certificates" matSort (matSortChange)="onSortChange($event)">
+          <!-- Checkbox Column -->
+          <ng-container matColumnDef="select">
+            <th mat-header-cell *matHeaderCellDef>
+              <mat-checkbox
+                [checked]="isAllSelected()"
+                [indeterminate]="isIndeterminate()"
+                (change)="toggleAllSelection()">
+              </mat-checkbox>
+            </th>
+            <td mat-cell *matCellDef="let cert">
+              <mat-checkbox
+                [checked]="selection.isSelected(cert)"
+                (change)="selection.toggle(cert)">
+              </mat-checkbox>
+            </td>
+          </ng-container>
+
+          <!-- Numero Certificado Column -->
+          <ng-container matColumnDef="numero_certificado">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="numero_certificado">
+              ID Certificado
+            </th>
+            <td mat-cell *matCellDef="let cert">
+              <strong>{{ cert.numero_certificado }}</strong>
+            </td>
+          </ng-container>
+
+          <!-- Participante Column -->
+          <ng-container matColumnDef="participante">
+            <th mat-header-cell *matHeaderCellDef>Participante</th>
+            <td mat-cell *matCellDef="let cert">
+              {{ cert.participante }}
+            </td>
+          </ng-container>
+
+          <!-- ID Number Column -->
+          <ng-container matColumnDef="idnumber">
+            <th mat-header-cell *matHeaderCellDef>Documento</th>
+            <td mat-cell *matCellDef="let cert">
+              {{ cert.idnumber || '-' }}
+            </td>
+          </ng-container>
+
+          <!-- Course Column -->
+          <ng-container matColumnDef="course_shortname">
+            <th mat-header-cell *matHeaderCellDef>Curso</th>
+            <td mat-cell *matCellDef="let cert">
+              <span [matTooltip]="cert.course_name">
+                {{ cert.course_shortname }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Fecha Emision Column -->
+          <ng-container matColumnDef="fecha_emision">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header="fecha_emision">
+              Fecha Emisión
+            </th>
+            <td mat-cell *matCellDef="let cert">
+              {{ cert.fecha_emision_formatted }}
+            </td>
+          </ng-container>
+
+          <!-- Estado Column -->
+          <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef>Estado</th>
+            <td mat-cell *matCellDef="let cert">
+              <mat-chip [ngClass]="getEstadoClass(cert.estado)">
+                {{ getEstadoLabel(cert.estado) }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <td mat-cell *matCellDef="let cert">
+              <div class="action-buttons">
+                <button mat-icon-button
+                        color="primary"
+                        [matTooltip]="cert.pdf_exists ? 'Descargar PDF' : 'Generar y descargar PDF'"
+                        (click)="downloadCertificate(cert)">
+                  <mat-icon>{{ cert.pdf_exists ? 'download' : 'picture_as_pdf' }}</mat-icon>
+                </button>
+                <button mat-icon-button
+                        color="warn"
+                        matTooltip="Regenerar certificado"
+                        (click)="regenerateCertificate(cert)">
+                  <mat-icon>refresh</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+              [class.selected]="selection.isSelected(row)"></tr>
+        </table>
+      </div>
+
+      <!-- Paginator -->
+      <mat-paginator
+        [length]="totalCertificates"
+        [pageSize]="pageSize"
+        [pageIndex]="pageIndex"
+        [pageSizeOptions]="pageSizeOptions"
+        (page)="onPageChange($event)"
+        showFirstLastButtons>
+      </mat-paginator>
+    }
+  </mat-card-content>
+</mat-card>
+
+<!-- Loading overlay for actions -->
+@if (actionLoading) {
+  <div class="action-loading-overlay">
+    <mat-spinner diameter="48"></mat-spinner>
+    <p>Procesando...</p>
+  </div>
+}
