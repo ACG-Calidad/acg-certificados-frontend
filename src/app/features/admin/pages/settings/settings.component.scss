@@ -1,3 +1,5 @@
+@use "@angular/material" as mat;
+
 .settings-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -88,6 +90,11 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
+    ::ng-deep {
+      .mdc-switch--selected .mdc-switch__handle-track {
+        transform: none !important;
+      }
+    }
   }
 }
 

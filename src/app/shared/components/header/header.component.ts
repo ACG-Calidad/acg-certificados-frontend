@@ -39,11 +39,8 @@ export class HeaderComponent {
   }
 
   logout(): void {
-    const redirectUrl = this.user?.role === 'admin'
-      ? 'http://localhost:8082/admin'
-      : 'http://localhost:8082';
     this.authService.logout();
-    window.location.href = redirectUrl;
+    window.location.href = '/certificados';
   }
 
   getRoleLabel(): string {

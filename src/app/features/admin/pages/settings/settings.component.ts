@@ -48,6 +48,7 @@ export class SettingsComponent implements OnInit {
     email_from_name: '',
     cron_execution_time: '07:00',
     gas_webhook_url: '',
+    gas_api_key: '',
     gas_enabled: false,
     validation_url: ''
   };

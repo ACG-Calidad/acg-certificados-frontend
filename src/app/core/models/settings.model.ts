@@ -11,6 +11,7 @@ export interface SystemSettings {
 
   // Google Apps Script
   gas_webhook_url: string;            // URL del webhook de GAS
+  gas_api_key: string;                // API Key para autenticación con GAS
   gas_enabled: boolean;               // Si está habilitada la integración
 
   // Validación pública
