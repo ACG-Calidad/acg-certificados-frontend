@@ -63,6 +63,21 @@ export interface RegenerateCertificatesResponse {
   };
 }
 
+export interface DeleteCertificateResponse {
+  success: boolean;
+  message?: string;
+  data?: {
+    deleted: {
+      id: number;
+      numero_certificado: string;
+      participant: string;
+      course: string;
+      estado: string;
+      pdf_deleted: boolean;
+    };
+  };
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -210,5 +225,16 @@ export class AdminService {
   downloadCertificate(certificateId: number): void {
     const url = `${this.apiUrl}/certificates/${certificateId}/download`;
     window.open(url, '_blank');
+  }
+
+  /**
+   * Elimina un certificado generado y su PDF físico
+   * @param certificateId ID del certificado
+   * @returns Observable con el resultado de la operación
+   */
+  deleteCertificate(certificateId: number): Observable<DeleteCertificateResponse> {
+    return this.http.delete<DeleteCertificateResponse>(
+      `${this.apiUrl}/admin/certificates/${certificateId}`
+    );
   }
 }

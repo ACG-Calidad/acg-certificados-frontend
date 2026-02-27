@@ -170,6 +170,12 @@
                         (click)="regenerateCertificate(cert)">
                   <mat-icon>refresh</mat-icon>
                 </button>
+                <button mat-icon-button
+                        color="warn"
+                        matTooltip="Eliminar certificado"
+                        (click)="deleteCertificate(cert)">
+                  <mat-icon>delete</mat-icon>
+                </button>
               </div>
             </td>
           </ng-container>

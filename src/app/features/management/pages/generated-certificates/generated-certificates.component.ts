@@ -18,7 +18,7 @@ import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
-import { AdminService, GeneratedCertificate } from '@core/services/admin.service';
+import { AdminService, GeneratedCertificate, DeleteCertificateResponse } from '@core/services/admin.service';
 import { ConfirmDialogComponent } from '@shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
@@ -223,6 +223,42 @@ export class GeneratedCertificatesComponent implements OnInit {
         console.error('Error descargando ZIP:', error);
         this.snackBar.open('Error al descargar certificados', 'Cerrar', { duration: 3000 });
         this.actionLoading = false;
+      }
+    });
+  }
+
+  // Delete single certificate
+  deleteCertificate(cert: GeneratedCertificate): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Eliminar certificado',
+        message: `¿Está seguro de eliminar el certificado ${cert.numero_certificado}? Esta acción no se puede deshacer.`,
+        confirmText: 'Eliminar',
+        cancelText: 'Cancelar',
+        confirmColor: 'warn'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === true) {
+        this.actionLoading = true;
+        this.adminService.deleteCertificate(cert.id).subscribe({
+          next: (response: DeleteCertificateResponse) => {
+            this.snackBar.open(
+              `Certificado ${cert.numero_certificado} eliminado correctamente`,
+              'Cerrar',
+              { duration: 3000 }
+            );
+            this.selection.deselect(cert);
+            this.loadCertificates();
+            this.actionLoading = false;
+          },
+          error: () => {
+            this.snackBar.open('Error al eliminar el certificado', 'Cerrar', { duration: 3000 });
+            this.actionLoading = false;
+          }
+        });
       }
     });
   }
