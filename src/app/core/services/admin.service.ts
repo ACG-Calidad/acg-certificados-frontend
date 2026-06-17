@@ -4,7 +4,7 @@ import { Observable, BehaviorSubject, interval } from 'rxjs';
 import { switchMap, startWith } from 'rxjs/operators';
 import { environment } from '@environments/environment';
 import { DashboardResponse } from '@core/models/dashboard.model';
-import { PendingUsersResponse, ApproveUsersResponse } from '@core/models/pending-user.model';
+import { PendingUsersResponse, ApproveUsersResponse, HideUnhideResponse } from '@core/models/pending-user.model';
 import { PendingNotificationsResponse, SendNotificationsResponse } from '@core/models/notification.model';
 
 export interface BadgeCounts {
@@ -96,10 +96,28 @@ export class AdminService {
 
   /**
    * Obtiene certificados pendientes de generar
+   * @param includeHidden Si es true, incluye usuarios ocultos con is_hidden=true
    * @returns Observable con lista de usuarios pendientes
    */
-  getPendingCertificates(): Observable<PendingUsersResponse> {
-    return this.http.get<PendingUsersResponse>(`${this.apiUrl}/admin/certificates/pending`);
+  getPendingCertificates(includeHidden = false): Observable<PendingUsersResponse> {
+    const params = includeHidden ? new HttpParams().set('include_hidden', 'true') : new HttpParams();
+    return this.http.get<PendingUsersResponse>(`${this.apiUrl}/admin/certificates/pending`, { params });
+  }
+
+  /**
+   * Oculta usuarios de la lista de pendientes
+   * @param items Array de {userid, course_id} a ocultar
+   */
+  hidePendingUsers(items: { userid: number; course_id: number }[]): Observable<HideUnhideResponse> {
+    return this.http.post<HideUnhideResponse>(`${this.apiUrl}/admin/certificates/hide`, { items });
+  }
+
+  /**
+   * Vuelve a mostrar usuarios ocultos en la lista de pendientes
+   * @param items Array de {userid, course_id} a mostrar
+   */
+  unhidePendingUsers(items: { userid: number; course_id: number }[]): Observable<HideUnhideResponse> {
+    return this.http.post<HideUnhideResponse>(`${this.apiUrl}/admin/certificates/unhide`, { items });
   }
 
   /**

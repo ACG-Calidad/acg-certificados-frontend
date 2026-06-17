@@ -121,6 +121,12 @@
   background-color: #fafafa;
 }
 
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .selection-info {
   display: flex;
   align-items: center;
@@ -219,6 +225,12 @@
 
 .no-grade {
   color: rgba(0, 0, 0, 0.4);
+}
+
+// Filas ocultas
+tr.hidden-row td {
+  opacity: 0.45;
+  font-style: italic;
 }
 
 // Responsive

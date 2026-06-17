@@ -113,13 +113,29 @@
           {{ filteredUsers.length }} usuario(s) pendiente(s)
         </span>
       </div>
-      <button mat-raised-button
-              color="primary"
-              [disabled]="selection.selected.length === 0"
-              (click)="openApproveDialog()">
-        <mat-icon>verified</mat-icon>
-        Aprobar y Generar Certificados
-      </button>
+      <div class="action-buttons">
+        <button mat-stroked-button
+                *ngIf="!showHidden && selection.selected.length > 0"
+                [disabled]="actionLoading"
+                (click)="hideSelected()"
+                matTooltip="Ocultar seleccionados">
+          <mat-icon>visibility_off</mat-icon>
+          Ocultar seleccionados
+        </button>
+        <button mat-icon-button
+                [color]="showHidden ? 'primary' : ''"
+                (click)="toggleShowHidden()"
+                [matTooltip]="showHidden ? 'Ocultar usuarios ocultos' : 'Mostrar usuarios ocultos'">
+          <mat-icon>{{ showHidden ? 'visibility' : 'visibility_off' }}</mat-icon>
+        </button>
+        <button mat-raised-button
+                color="primary"
+                [disabled]="selection.selected.length === 0"
+                (click)="openApproveDialog()">
+          <mat-icon>verified</mat-icon>
+          Aprobar y Generar Certificados
+        </button>
+      </div>
     </div>
 
     <!-- Data Table -->
@@ -185,9 +201,32 @@
           <td mat-cell *matCellDef="let user">{{ formatDate(user.grade_date) }}</td>
         </ng-container>
 
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let user" (click)="$event.stopPropagation()">
+            <button *ngIf="!user.is_hidden"
+                    mat-icon-button
+                    (click)="hideUser(user)"
+                    [disabled]="actionLoading"
+                    matTooltip="Ocultar">
+              <mat-icon>visibility_off</mat-icon>
+            </button>
+            <button *ngIf="user.is_hidden"
+                    mat-icon-button
+                    color="primary"
+                    (click)="unhideUser(user)"
+                    [disabled]="actionLoading"
+                    matTooltip="Mostrar">
+              <mat-icon>visibility</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"
             [class.selected]="selection.isSelected(row)"
+            [class.hidden-row]="row.is_hidden"
             (click)="selection.toggle(row)"></tr>
       </table>
     </div>

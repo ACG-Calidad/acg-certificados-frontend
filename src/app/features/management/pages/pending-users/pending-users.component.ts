@@ -15,6 +15,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { AdminService } from '@core/services/admin.service';
 import { PendingUser, PendingUsersResponse, ApproveUsersResponse } from '@core/models/pending-user.model';
@@ -43,7 +44,8 @@ interface CourseOption {
     MatNativeDateModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
-    MatDialogModule
+    MatDialogModule,
+    MatSnackBarModule
   ],
   templateUrl: './pending-users.component.html',
   styleUrls: ['./pending-users.component.scss']
@@ -67,15 +69,22 @@ export class PendingUsersComponent implements OnInit {
     (u1, u2) => u1.userid === u2.userid && u1.course_id === u2.course_id
   );
 
+  // Toggle para mostrar/ocultar usuarios ocultos
+  showHidden = false;
+
   // Table columns
-  displayedColumns = ['select', 'user', 'document', 'course', 'grade', 'grade_date'];
+  displayedColumns = ['select', 'user', 'document', 'course', 'grade', 'grade_date', 'actions'];
 
   // Filter for minimum grade (80% default)
   minGradeFilter: number | null = null;
 
+  // Loading state for hide/unhide actions
+  actionLoading = false;
+
   constructor(
     private adminService: AdminService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -87,7 +96,7 @@ export class PendingUsersComponent implements OnInit {
     this.error = null;
     this.selection.clear();
 
-    this.adminService.getPendingCertificates().subscribe({
+    this.adminService.getPendingCertificates(this.showHidden).subscribe({
       next: (response: PendingUsersResponse) => {
         if (response.success && response.data) {
           this.pendingUsers = response.data.pending_users;
@@ -305,6 +314,61 @@ export class PendingUsersComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result === true) {
         this.approveSelectedUsers();
+      }
+    });
+  }
+
+  toggleShowHidden(): void {
+    this.showHidden = !this.showHidden;
+    this.loadPendingUsers();
+  }
+
+  hideSelected(): void {
+    const items = this.selection.selected
+      .filter(u => !u.is_hidden)
+      .map(u => ({ userid: u.userid, course_id: u.course_id }));
+    if (!items.length) return;
+
+    this.actionLoading = true;
+    this.adminService.hidePendingUsers(items).subscribe({
+      next: () => {
+        this.actionLoading = false;
+        this.snackBar.open(`${items.length} usuario(s) oculto(s)`, 'Cerrar', { duration: 3000 });
+        this.loadPendingUsers();
+      },
+      error: () => {
+        this.actionLoading = false;
+        this.snackBar.open('Error al ocultar usuarios', 'Cerrar', { duration: 4000 });
+      }
+    });
+  }
+
+  hideUser(user: PendingUser): void {
+    this.actionLoading = true;
+    this.adminService.hidePendingUsers([{ userid: user.userid, course_id: user.course_id }]).subscribe({
+      next: () => {
+        this.actionLoading = false;
+        this.snackBar.open('Usuario ocultado', 'Cerrar', { duration: 3000 });
+        this.loadPendingUsers();
+      },
+      error: () => {
+        this.actionLoading = false;
+        this.snackBar.open('Error al ocultar usuario', 'Cerrar', { duration: 4000 });
+      }
+    });
+  }
+
+  unhideUser(user: PendingUser): void {
+    this.actionLoading = true;
+    this.adminService.unhidePendingUsers([{ userid: user.userid, course_id: user.course_id }]).subscribe({
+      next: () => {
+        this.actionLoading = false;
+        this.snackBar.open('Usuario visible de nuevo', 'Cerrar', { duration: 3000 });
+        this.loadPendingUsers();
+      },
+      error: () => {
+        this.actionLoading = false;
+        this.snackBar.open('Error al mostrar usuario', 'Cerrar', { duration: 4000 });
       }
     });
   }

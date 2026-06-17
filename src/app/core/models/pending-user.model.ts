@@ -10,6 +10,7 @@ export interface PendingUser {
   grade: number | null;
   grade_date: number;
   grade_date_formatted: string;
+  is_hidden?: boolean;
 }
 
 export interface PendingUsersResponse {
@@ -33,6 +34,16 @@ export interface ApproveUsersResponse {
   data?: {
     approved: number;
     certificates_created: number;
+  };
+  error?: string;
+}
+
+export interface HideUnhideResponse {
+  success: boolean;
+  message?: string;
+  data?: {
+    hidden?: number;
+    shown?: number;
   };
   error?: string;
 }
