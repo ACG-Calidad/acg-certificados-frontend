@@ -89,6 +89,7 @@ export interface Template {
   archivo_size: number;
   archivo_size_formatted?: string;
   imagen_preview?: string | null;
+  intensidad_horaria?: number | null;
   version: number;
   activo: boolean;
   uploaded_by: number;

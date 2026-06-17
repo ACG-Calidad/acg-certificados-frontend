@@ -171,9 +171,11 @@ import { VisualFieldEditorDialogComponent } from './components/visual-field-edit
                       [courseName]="template.course_name"
                       [availableFields]="availableFieldsCurso"
                       [loading]="courseLoadingMap[template.courseid!]"
+                      [intensidadHoraria]="template.intensidad_horaria ?? defaultIntensity"
                       (upload)="onUploadCourse(template)"
                       (download)="onDownload(template)"
-                      (delete)="onDeleteCourse(template)">
+                      (delete)="onDeleteCourse(template)"
+                      (intensidadChanged)="onIntensidadChanged(template, $event)">
                     </app-template-card>
                   }
                 </div>
@@ -537,6 +539,7 @@ export class TemplatesComponent implements OnInit, OnDestroy {
 
   loading = true;
   error = '';
+  defaultIntensity = 40;
 
   baseTemplate: Template | null = null;
   courseTemplates: Template[] = [];
@@ -869,6 +872,32 @@ export class TemplatesComponent implements OnInit, OnDestroy {
         },
         error: (err) => {
           this.showError(err.error?.message || 'Error al guardar campos');
+        }
+      });
+  }
+
+  onIntensidadChanged(template: Template, intensidad: number): void {
+    this.courseLoadingMap[template.courseid!] = true;
+
+    this.templateService.updateCourseIntensity(template.courseid!, intensidad)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => this.courseLoadingMap[template.courseid!] = false)
+      )
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            const idx = this.courseTemplates.findIndex(t => t.id === template.id);
+            if (idx !== -1) {
+              this.courseTemplates[idx].intensidad_horaria = intensidad;
+            }
+            this.showSuccess(`Intensidad actualizada a ${intensidad} horas`);
+          } else {
+            this.showError(response.message || 'Error al actualizar intensidad');
+          }
+        },
+        error: (err) => {
+          this.showError(err.error?.message || 'Error al actualizar intensidad');
         }
       });
   }

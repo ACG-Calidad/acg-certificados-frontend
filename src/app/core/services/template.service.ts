@@ -120,6 +120,18 @@ export class TemplateService {
   }
 
   /**
+   * Actualiza la intensidad horaria de la plantilla de un curso
+   * @param courseid ID del curso
+   * @param intensidad Horas de intensidad
+   */
+  updateCourseIntensity(courseid: number, intensidad: number): Observable<{ success: boolean; message: string; data: { courseid: number; intensidad_horaria: number } }> {
+    return this.http.patch<{ success: boolean; message: string; data: { courseid: number; intensidad_horaria: number } }>(
+      `${this.apiUrl}/admin/templates/course/${courseid}/intensity`,
+      { intensidad }
+    );
+  }
+
+  /**
    * Genera un PDF de preview con datos de ejemplo
    * @param courseid ID del curso
    */

@@ -1,11 +1,14 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { Template, AvailableFields } from '../../../../../../core/models/template.model';
 
 @Component({
@@ -13,12 +16,15 @@ import { Template, AvailableFields } from '../../../../../../core/models/templat
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
     MatChipsModule,
     MatTooltipModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatInputModule,
+    MatFormFieldModule
   ],
   template: `
     <mat-card class="template-card" [class.has-template]="template" [class.no-template]="!template">
@@ -62,6 +68,21 @@ import { Template, AvailableFields } from '../../../../../../core/models/templat
               <span class="value">{{ template.updated_at_formatted }}</span>
             </div>
           </div>
+
+          @if (type === 'curso') {
+            <div class="intensity-section">
+              <mat-form-field appearance="outline" class="intensity-field">
+                <mat-label>Intensidad horaria</mat-label>
+                <input matInput
+                       type="number"
+                       min="1"
+                       [(ngModel)]="editableIntensidad"
+                       (blur)="onIntensidadBlur()"
+                       (keydown.enter)="onIntensidadBlur()">
+                <span matSuffix>horas</span>
+              </mat-form-field>
+            </div>
+          }
 
           <div class="fields-section">
             <div class="fields-header">
@@ -182,6 +203,14 @@ import { Template, AvailableFields } from '../../../../../../core/models/templat
       }
     }
 
+    .intensity-section {
+      margin-bottom: 12px;
+
+      .intensity-field {
+        width: 180px;
+      }
+    }
+
     .fields-section {
       background: #f5f5f5;
       padding: 12px;
@@ -261,10 +290,17 @@ export class TemplateCardComponent {
   @Input() loading = false;
   @Input() canPreview = false;
 
+  @Input() set intensidadHoraria(value: number) {
+    this.editableIntensidad = value;
+  }
+
   @Output() upload = new EventEmitter<void>();
   @Output() download = new EventEmitter<void>();
   @Output() preview = new EventEmitter<void>();
   @Output() delete = new EventEmitter<void>();
+  @Output() intensidadChanged = new EventEmitter<number>();
+
+  editableIntensidad = 40;
 
   get configuredFieldsCount(): number {
     return this.template?.campos ? Object.keys(this.template.campos).length : 0;
@@ -292,5 +328,12 @@ export class TemplateCardComponent {
 
   onDelete(): void {
     this.delete.emit();
+  }
+
+  onIntensidadBlur(): void {
+    const value = Number(this.editableIntensidad);
+    if (value >= 1) {
+      this.intensidadChanged.emit(value);
+    }
   }
 }
